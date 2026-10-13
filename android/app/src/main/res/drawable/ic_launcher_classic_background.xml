@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 经典图标自适应背景：取瓦片自身的蓝色渐变，遮罩后与前景同色无缝 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="315"
+        android:startColor="#BBDDF8"
+        android:centerColor="#9BC5ED"
+        android:endColor="#97C2ED"
+        android:type="linear"/>
+</shape>
