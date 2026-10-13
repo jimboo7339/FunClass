@@ -10,7 +10,12 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-FLUTTER="F:/otherCode/flutter-dev/flutter/bin/flutter"
+# Flutter 可执行文件：优先 FLUTTER_BIN 环境变量，其次本机默认路径，
+# 都不存在时从 PATH 查找（GitHub Actions 等 CI 环境走这条路）
+FLUTTER="${FLUTTER_BIN:-F:/otherCode/flutter-dev/flutter/bin/flutter}"
+if ! [ -f "$FLUTTER" ]; then
+  FLUTTER="$(command -v flutter)" || { echo "!! 找不到 flutter 可执行文件" >&2; exit 1; }
+fi
 INFO="lib/core/build_info.g.dart"
 APK_DIR="build/app/outputs/flutter-apk"
 

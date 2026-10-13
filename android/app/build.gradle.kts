@@ -44,11 +44,29 @@ android {
         }
     }
 
+    // CI 签名：配置了 FUNCLASS_STORE_FILE 等环境变量时启用（GitHub Actions 用），
+    // 本地不设这些变量，完全不受影响
+    signingConfigs {
+        create("ci") {
+            val storePath = System.getenv("FUNCLASS_STORE_FILE")
+            if (storePath != null) {
+                storeFile = file(storePath)
+                storePassword = System.getenv("FUNCLASS_STORE_PASSWORD")
+                keyAlias = System.getenv("FUNCLASS_KEY_ALIAS")
+                keyPassword = System.getenv("FUNCLASS_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // CI 注入了正式 keystore 就用它；否则维持 debug 签名，保证 flutter run --release 可用。
+            // 注意：debug 签名每次构建密钥都可能不同，发布的 APK 无法覆盖安装，正式发布请配置签名
+            signingConfig = if (System.getenv("FUNCLASS_STORE_FILE") != null) {
+                signingConfigs.getByName("ci")
+            } else {
+                signingConfigs.getByName("debug")
+            }
             // release 也强制 arm64-only ——来自Trae
             ndk {
                 abiFilters.clear()

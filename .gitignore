@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# CI 从 secrets 解码出来的签名密钥，严禁提交
+android/app/*.jks
+android/app/*.keystore

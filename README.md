@@ -81,6 +81,24 @@ bash tool/build_apk.sh --split    # 按 ABI 拆分
 
 产物位于 `build/app/outputs/flutter-apk/`。
 
+### GitHub Actions 自动构建
+
+仓库内置流水线 `.github/workflows/release.yml`，在 GitHub 云端构建 release APK 并发布：
+
+- **打 tag 触发**：推送 `v` 开头的 tag（如 `v1.0.3`）即自动构建，并在 Releases 页创建带 APK 与 SHA-256 校验文件的 Release
+- **手动触发**：Actions 页面 Run workflow，构建结果保存为 workflow artifact
+
+签名说明：默认用 CI 临时 debug 签名（可安装，但每次密钥不同、无法覆盖安装旧版）。正式发布请在仓库 **Settings → Secrets and variables → Actions** 配置 4 个 secrets：
+
+| Secret | 内容 |
+|---|---|
+| `FUNCLASS_KEYSTORE_BASE64` | keystore 文件的 base64（`base64 -w0 xxx.jks`） |
+| `FUNCLASS_STORE_PASSWORD` | keystore 密码 |
+| `FUNCLASS_KEY_ALIAS` | key 别名 |
+| `FUNCLASS_KEY_PASSWORD` | key 密码 |
+
+配置后流水线自动改用正式签名，构建编号从 1000 起单调递增，保证覆盖安装不被系统拒绝。
+
 ### 图标
 
 各平台默认图标通过 `dart run flutter_launcher_icons` 生成；设置页内可切换的四款备用桌面图标（拼图/笑脸/书本/火花）由 `tool/icon_design/` 下的 Python 脚本维护，两套流水线互不影响。
